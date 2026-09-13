@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Users, Flame, Lightbulb, PencilLine, Radio, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Users, Flame, Images, Lightbulb, PencilLine, Radio, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/control/")({
   head: () => ({
@@ -78,6 +78,15 @@ function ControlPanel() {
           >
             <Radio className="h-5 w-5 text-primary" />
             <span className="text-lg font-extrabold text-primary">لوحة الستريمرز</span>
+            <ArrowLeft className="h-5 w-5 text-primary transition-transform group-hover:-translate-x-1" />
+          </Link>
+
+          <Link
+            to="/control/management"
+            className="surface-card group flex items-center justify-between rounded-2xl border-2 border-primary/60 px-6 py-5 text-right transition-all hover:border-primary hover:shadow-[var(--shadow-elegant)]"
+          >
+            <Images className="h-5 w-5 text-primary" />
+            <span className="text-lg font-extrabold text-primary">صور إدارة السيرفر</span>
             <ArrowLeft className="h-5 w-5 text-primary transition-transform group-hover:-translate-x-1" />
           </Link>
 

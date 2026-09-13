@@ -68,6 +68,10 @@ async function signAll(
   const urls: Record<string, string> = {};
   await Promise.all(
     Array.from(new Set(paths)).map(async (path) => {
+      if (path.startsWith("/__l5e/assets-v1/")) {
+        urls[path] = path;
+        return;
+      }
       const { data } = await db.storage.from(EDIT_BUCKET).createSignedUrl(path, 60 * 60 * 6);
       if (data?.signedUrl) urls[path] = data.signedUrl;
     }),
