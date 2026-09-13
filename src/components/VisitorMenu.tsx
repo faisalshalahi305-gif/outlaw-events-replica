@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Home, MoreVertical, User } from "lucide-react";
+import { Home, MoreVertical, User, UsersRound } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -63,6 +63,16 @@ export function VisitorMenu({ visitorNumber, onTriggerPress }: VisitorMenuProps)
           <Link to="/" className="flex w-full items-center gap-3 text-right font-bold">
             <Home className="h-4 w-4 text-primary" />
             الصفحة الرئيسية
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild className="cursor-pointer rounded-xl px-3 py-2.5">
+          <Link
+            to="/management"
+            className="flex w-full items-center gap-3 text-right font-bold"
+          >
+            <UsersRound className="h-4 w-4 text-primary" />
+            إدارة سيرفر أوت لاو
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
