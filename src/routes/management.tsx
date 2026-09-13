@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Crown, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Crown, Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 
 import { VisitorMenu } from "@/components/VisitorMenu";
 import twoAAsset from "@/assets/management/2a.jpeg.asset.json";
@@ -10,6 +12,7 @@ import fwazAsset from "@/assets/management/fwaz.jpeg.asset.json";
 import fahadAsset from "@/assets/management/fahad.jpeg.asset.json";
 import naroAsset from "@/assets/management/naro.jpeg.asset.json";
 import { useVisitorNumber } from "@/lib/use-visitor";
+import { loadSection } from "@/lib/edits.functions";
 
 export const Route = createFileRoute("/management")({
   head: () => ({
@@ -31,18 +34,38 @@ export const Route = createFileRoute("/management")({
   component: ManagementPage,
 });
 
-const MEMBERS = [
-  { name: "2a", role: "OWNER", image: twoAAsset.url },
-  { name: "Fad", role: "OWNER", image: fadAsset.url },
-  { name: "SOVE", role: "FOUNDER", image: soveAsset.url },
-  { name: "Dappi", role: "FOUNDER", image: dappiAsset.url },
-  { name: "Fwaz", role: "FOUNDER", image: fwazAsset.url },
-  { name: "FaHaD", role: "DEV DIRECTOR", image: fahadAsset.url },
-  { name: "Naro", role: "DEV DIRECTOR", image: naroAsset.url },
+export const DEFAULT_MANAGEMENT_IMAGES = [
+  twoAAsset.url,
+  fadAsset.url,
+  soveAsset.url,
+  dappiAsset.url,
+  fwazAsset.url,
+  fahadAsset.url,
+  naroAsset.url,
 ] as const;
 
 function ManagementPage() {
   const visitorNumber = useVisitorNumber();
+  const fetchImages = useServerFn(loadSection);
+  const [images, setImages] = useState<string[]>([...DEFAULT_MANAGEMENT_IMAGES]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchImages({ data: { section: "management" } })
+      .then((result) => {
+        if (cancelled || result.entries.length === 0) return;
+        const paths = result.entries.flatMap((entry) => entry.images);
+        setImages(paths.map((path) => result.imageUrls[path]).filter((url): url is string => Boolean(url)));
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchImages]);
 
   return (
     <main dir="rtl" className="relative min-h-screen overflow-hidden px-4 pb-24 pt-8">
@@ -77,43 +100,31 @@ function ManagementPage() {
           </div>
         </header>
 
-        <section aria-label="أعضاء إدارة سيرفر أوت لاو" className="relative">
-          <div className="absolute bottom-16 right-5 top-16 w-px bg-gradient-to-b from-transparent via-primary/50 to-transparent sm:right-1/2" />
-
-          <div className="space-y-8 sm:space-y-12">
-            {MEMBERS.map((member, index) => (
-              <article
-                key={member.name}
-                className="group relative grid min-h-64 overflow-hidden rounded-2xl border border-primary/25 bg-card/80 shadow-[var(--shadow-soft)] backdrop-blur-sm sm:grid-cols-[minmax(0,1.1fr)_minmax(190px,0.9fr)]"
-              >
-                <div className="relative min-h-72 overflow-hidden sm:min-h-80">
+        <section aria-label="صور إدارة سيرفر أوت لاو">
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جاري تحميل الصور…
+            </div>
+          ) : images.length === 0 ? (
+            <p className="py-12 text-center text-sm font-bold text-muted-foreground">لا توجد صور حاليًا</p>
+          ) : (
+            <div className="space-y-8 sm:space-y-12">
+              {images.map((image, index) => (
+                <figure
+                  key={`${image}-${index}`}
+                  className="group relative overflow-hidden rounded-2xl border border-primary/30 bg-card/80 p-2 shadow-[var(--shadow-soft)]"
+                >
                   <img
-                    src={member.image}
-                    alt={`${member.name} — ${member.role}`}
+                    src={image}
+                    alt={`صورة من إدارة سيرفر أوت لاو ${index + 1}`}
                     loading={index === 0 ? "eager" : "lazy"}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025]"
+                    className="mx-auto block h-auto max-h-[80vh] w-full rounded-xl object-contain transition-transform duration-700 group-hover:scale-[1.015]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card/70 via-transparent to-transparent sm:bg-gradient-to-l" />
-                </div>
-
-                <div className="relative flex min-h-40 flex-col items-center justify-center border-t border-primary/20 px-6 py-8 text-center sm:border-r sm:border-t-0">
-                  <span className="mb-5 flex h-10 w-10 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary">
-                    <ShieldCheck className="h-5 w-5" />
-                  </span>
-                  <span className="mb-2 text-[11px] font-bold text-muted-foreground">
-                    {String(index + 1).padStart(2, "0")} / {String(MEMBERS.length).padStart(2, "0")}
-                  </span>
-                  <h2 className="text-3xl font-extrabold text-foreground">{member.name}</h2>
-                  <p className="mt-3 text-xs font-extrabold text-primary">{member.role}</p>
-                  <span className="mt-6 h-px w-16 bg-primary/50" />
-                </div>
-
-                <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full border border-primary/50 bg-background sm:right-1/2 sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-1/2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                </span>
-              </article>
-            ))}
-          </div>
+                </figure>
+              ))}
+            </div>
+          )}
         </section>
 
         <footer className="mt-16 text-center">

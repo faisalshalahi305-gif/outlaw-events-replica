@@ -32,7 +32,7 @@ export type EditRequest = {
   imageUrls: Record<string, string>;
 };
 
-const SECTIONS = new Set(["characters", "events"]);
+const SECTIONS = new Set(["characters", "events", "management"]);
 
 export const THREAD_SECTIONS = ["thread_create", "thread_update", "thread_delete"] as const;
 
