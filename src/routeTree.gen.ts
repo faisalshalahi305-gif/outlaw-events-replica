@@ -14,6 +14,7 @@ import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as ControlRouteImport } from './routes/control'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as GateRouteImport } from './routes/gate'
+import { Route as ManagementRouteImport } from './routes/management'
 import { Route as RevisionsRouteImport } from './routes/revisions'
 import { Route as SetupRouteImport } from './routes/setup'
 import { Route as StreamersRouteImport } from './routes/streamers'
@@ -55,6 +56,11 @@ const EventsRoute = EventsRouteImport.update({
 const GateRoute = GateRouteImport.update({
   id: '/gate',
   path: '/gate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManagementRoute = ManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RevisionsRoute = RevisionsRouteImport.update({
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/control': typeof ControlRouteWithChildren
   '/events': typeof EventsRoute
   '/gate': typeof GateRoute
+  '/management': typeof ManagementRoute
   '/revisions': typeof RevisionsRouteWithChildren
   '/setup': typeof SetupRoute
   '/streamers': typeof StreamersRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/characters': typeof CharactersRoute
   '/events': typeof EventsRoute
   '/gate': typeof GateRoute
+  '/management': typeof ManagementRoute
   '/setup': typeof SetupRoute
   '/streamers': typeof StreamersRoute
   '/streamers-new': typeof StreamersNewRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/control': typeof ControlRouteWithChildren
   '/events': typeof EventsRoute
   '/gate': typeof GateRoute
+  '/management': typeof ManagementRoute
   '/revisions': typeof RevisionsRouteWithChildren
   '/setup': typeof SetupRoute
   '/streamers': typeof StreamersRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/control'
     | '/events'
     | '/gate'
+    | '/management'
     | '/revisions'
     | '/setup'
     | '/streamers'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/characters'
     | '/events'
     | '/gate'
+    | '/management'
     | '/setup'
     | '/streamers'
     | '/streamers-new'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/control'
     | '/events'
     | '/gate'
+    | '/management'
     | '/revisions'
     | '/setup'
     | '/streamers'
@@ -291,6 +303,7 @@ export interface RootRouteChildren {
   ControlRoute: typeof ControlRouteWithChildren
   EventsRoute: typeof EventsRoute
   GateRoute: typeof GateRoute
+  ManagementRoute: typeof ManagementRoute
   RevisionsRoute: typeof RevisionsRouteWithChildren
   SetupRoute: typeof SetupRoute
   StreamersRoute: typeof StreamersRoute
@@ -333,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/gate'
       fullPath: '/gate'
       preLoaderRoute: typeof GateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/management': {
+      id: '/management'
+      path: '/management'
+      fullPath: '/management'
+      preLoaderRoute: typeof ManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/revisions': {
@@ -515,6 +535,7 @@ const rootRouteChildren: RootRouteChildren = {
   ControlRoute: ControlRouteWithChildren,
   EventsRoute: EventsRoute,
   GateRoute: GateRoute,
+  ManagementRoute: ManagementRoute,
   RevisionsRoute: RevisionsRouteWithChildren,
   SetupRoute: SetupRoute,
   StreamersRoute: StreamersRoute,
