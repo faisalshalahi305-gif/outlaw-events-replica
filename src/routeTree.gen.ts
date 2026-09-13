@@ -23,6 +23,7 @@ import { Route as ThreadsRouteImport } from './routes/threads'
 import { Route as ControlIndexRouteImport } from './routes/control.index'
 import { Route as ControlCharactersRouteImport } from './routes/control.characters'
 import { Route as ControlEventsRouteImport } from './routes/control.events'
+import { Route as ControlManagementRouteImport } from './routes/control.management'
 import { Route as ControlRevisionsRouteImport } from './routes/control.revisions'
 import { Route as ControlStreamersRouteImport } from './routes/control.streamers'
 import { Route as ControlSuggestionsRouteImport } from './routes/control.suggestions'
@@ -103,6 +104,11 @@ const ControlEventsRoute = ControlEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => ControlRoute,
 } as any)
+const ControlManagementRoute = ControlManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
+  getParentRoute: () => ControlRoute,
+} as any)
 const ControlRevisionsRoute = ControlRevisionsRouteImport.update({
   id: '/revisions',
   path: '/revisions',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/threads': typeof ThreadsRouteWithChildren
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
+  '/control/management': typeof ControlManagementRoute
   '/control/revisions': typeof ControlRevisionsRoute
   '/control/streamers': typeof ControlStreamersRoute
   '/control/suggestions': typeof ControlSuggestionsRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/streamers-new': typeof StreamersNewRoute
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
+  '/control/management': typeof ControlManagementRoute
   '/control/revisions': typeof ControlRevisionsRoute
   '/control/streamers': typeof ControlStreamersRoute
   '/control/suggestions': typeof ControlSuggestionsRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/threads': typeof ThreadsRouteWithChildren
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
+  '/control/management': typeof ControlManagementRoute
   '/control/revisions': typeof ControlRevisionsRoute
   '/control/streamers': typeof ControlStreamersRoute
   '/control/suggestions': typeof ControlSuggestionsRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/threads'
     | '/control/characters'
     | '/control/events'
+    | '/control/management'
     | '/control/revisions'
     | '/control/streamers'
     | '/control/suggestions'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/streamers-new'
     | '/control/characters'
     | '/control/events'
+    | '/control/management'
     | '/control/revisions'
     | '/control/streamers'
     | '/control/suggestions'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/threads'
     | '/control/characters'
     | '/control/events'
+    | '/control/management'
     | '/control/revisions'
     | '/control/streamers'
     | '/control/suggestions'
@@ -411,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ControlEventsRouteImport
       parentRoute: typeof ControlRoute
     }
+    '/control/management': {
+      id: '/control/management'
+      path: '/management'
+      fullPath: '/control/management'
+      preLoaderRoute: typeof ControlManagementRouteImport
+      parentRoute: typeof ControlRoute
+    }
     '/control/revisions': {
       id: '/control/revisions'
       path: '/revisions'
@@ -480,6 +499,7 @@ declare module '@tanstack/react-router' {
 interface ControlRouteChildren {
   ControlCharactersRoute: typeof ControlCharactersRoute
   ControlEventsRoute: typeof ControlEventsRoute
+  ControlManagementRoute: typeof ControlManagementRoute
   ControlRevisionsRoute: typeof ControlRevisionsRoute
   ControlStreamersRoute: typeof ControlStreamersRoute
   ControlSuggestionsRoute: typeof ControlSuggestionsRoute
@@ -490,6 +510,7 @@ interface ControlRouteChildren {
 const ControlRouteChildren: ControlRouteChildren = {
   ControlCharactersRoute: ControlCharactersRoute,
   ControlEventsRoute: ControlEventsRoute,
+  ControlManagementRoute: ControlManagementRoute,
   ControlRevisionsRoute: ControlRevisionsRoute,
   ControlStreamersRoute: ControlStreamersRoute,
   ControlSuggestionsRoute: ControlSuggestionsRoute,

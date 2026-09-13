@@ -9,7 +9,7 @@ import { ensureBrowserSupabaseConfig } from "@/integrations/supabase/runtime-con
 import { loadSection, publishSection } from "@/lib/edits.functions";
 import { EDIT_BUCKET } from "@/lib/edits-shared";
 import { readAccessToken, readVisitorToken } from "@/lib/gate-identity";
-import { DEFAULT_MANAGEMENT_IMAGES } from "@/routes/management";
+import { DEFAULT_MANAGEMENT_IMAGES } from "@/lib/management-images";
 
 type ManagedImage = { path: string; url: string };
 
@@ -32,7 +32,7 @@ export function ManagementImagesBoard() {
         if (cancelled) return;
         const paths = result.entries.flatMap((entry) => entry.images);
         setImages(
-          paths.length
+          result.entries.length
             ? paths.map((path) => ({ path, url: result.imageUrls[path] ?? "" })).filter((item) => item.url)
             : DEFAULT_MANAGEMENT_IMAGES.map((url) => ({ path: url, url })),
         );
@@ -81,7 +81,9 @@ export function ManagementImagesBoard() {
       await publish({
         data: {
           section: "management",
-          entries: images.map((image) => ({ text: "", images: [image.path] })),
+          entries: images.length
+            ? images.map((image) => ({ text: "", images: [image.path] }))
+            : [{ text: "__management_empty__", images: [] }],
           accessToken: readAccessToken(),
           visitorToken: readVisitorToken(),
         },

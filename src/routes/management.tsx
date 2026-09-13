@@ -4,15 +4,9 @@ import { ArrowRight, Crown, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { VisitorMenu } from "@/components/VisitorMenu";
-import twoAAsset from "@/assets/management/2a.jpeg.asset.json";
-import fadAsset from "@/assets/management/fad.jpeg.asset.json";
-import soveAsset from "@/assets/management/sove.jpeg.asset.json";
-import dappiAsset from "@/assets/management/dappi.jpeg.asset.json";
-import fwazAsset from "@/assets/management/fwaz.jpeg.asset.json";
-import fahadAsset from "@/assets/management/fahad.jpeg.asset.json";
-import naroAsset from "@/assets/management/naro.jpeg.asset.json";
 import { useVisitorNumber } from "@/lib/use-visitor";
 import { loadSection } from "@/lib/edits.functions";
+import { DEFAULT_MANAGEMENT_IMAGES } from "@/lib/management-images";
 
 export const Route = createFileRoute("/management")({
   head: () => ({
@@ -33,16 +27,6 @@ export const Route = createFileRoute("/management")({
   }),
   component: ManagementPage,
 });
-
-export const DEFAULT_MANAGEMENT_IMAGES = [
-  twoAAsset.url,
-  fadAsset.url,
-  soveAsset.url,
-  dappiAsset.url,
-  fwazAsset.url,
-  fahadAsset.url,
-  naroAsset.url,
-] as const;
 
 function ManagementPage() {
   const visitorNumber = useVisitorNumber();
