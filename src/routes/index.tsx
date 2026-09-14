@@ -122,8 +122,8 @@ function Home() {
           موقع مخصص لمتابعي سيرفر أوت لاو يتيح لك التعرف على الشخصيات والستريمرز وأبرز أحداث السيرفر ويساعد المتابع الجديد على فهم الأحداث والشخصيات كما يتيح للمتابعين القدامى التعديل بالاضافه والحذف والتحرير على الاحداث والشخصيات لتعرف المتابعين الجدد بالسيرفر واحداثه وشخصياته وزيادة نمو السيرفر
         </div>
 
-        <p className="mt-8 text-xs font-bold tracking-widest text-muted-foreground/70">
-          {visitorNumber ? `زائر-${visitorNumber}` : ""}
+        <p className="mt-8 text-sm font-bold tracking-widest text-muted-foreground/80">
+          مالك الموقع : <span className="text-primary">Kyzer</span>
         </p>
       </div>
 
