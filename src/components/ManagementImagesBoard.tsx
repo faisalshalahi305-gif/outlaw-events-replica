@@ -34,7 +34,7 @@ export function ManagementImagesBoard() {
         const paths = result.entries.flatMap((entry) => entry.images);
         setImages(MANAGEMENT_MEMBERS.map((_, index) => {
           const path = paths[index];
-          const fallback = DEFAULT_MANAGEMENT_IMAGES[index];
+          const fallback = DEFAULT_MANAGEMENT_IMAGES[index] ?? "";
           return path && result.imageUrls[path]
             ? { path, url: result.imageUrls[path] }
             : { path: fallback, url: fallback };
@@ -64,7 +64,7 @@ export function ManagementImagesBoard() {
       const { data } = await supabase.storage.from(EDIT_BUCKET).createSignedUrl(path, 60 * 60 * 6);
       if (!data?.signedUrl) throw new Error("signed_url_failed");
       setImages((current) => current.map((image, itemIndex) => itemIndex === index ? { path, url: data.signedUrl } : image));
-      setMessage(`تم استبدال صورة ${MANAGEMENT_MEMBERS[index].name}، اضغط حفظ لنشرها`);
+      setMessage(`تم استبدال صورة ${MANAGEMENT_MEMBERS[index]?.name ?? "الشخص"}، اضغط حفظ لنشرها`);
     } catch (error) {
       console.error(error);
       setMessage("تعذّر رفع الصورة");
@@ -124,7 +124,7 @@ export function ManagementImagesBoard() {
         ) : (
           <div className="space-y-5">
             {MANAGEMENT_MEMBERS.map((member, index) => (
-              <article key={`${image.path}-${index}`} className="surface-card relative overflow-hidden rounded-2xl border border-primary/30 p-2">
+              <article key={member.name} className="surface-card relative overflow-hidden rounded-2xl border border-primary/30 p-2">
                 <img src={images[index]?.url} alt={`صورة ${member.name}`} className="max-h-[70vh] w-full rounded-xl object-contain" />
                 <div className="flex items-center justify-between gap-4 px-3 py-4">
                   <div dir="ltr" className="text-left">

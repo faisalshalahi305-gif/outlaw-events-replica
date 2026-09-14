@@ -42,7 +42,7 @@ function ManagementPage() {
         const paths = result.entries.flatMap((entry) => entry.images);
         setImages(
           MANAGEMENT_MEMBERS.map(
-            (_, index) => result.imageUrls[paths[index] ?? ""] ?? DEFAULT_MANAGEMENT_IMAGES[index],
+            (_, index) => result.imageUrls[paths[index] ?? ""] ?? DEFAULT_MANAGEMENT_IMAGES[index] ?? "",
           ),
         );
       })
