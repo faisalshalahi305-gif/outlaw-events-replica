@@ -15,3 +15,13 @@ export const DEFAULT_MANAGEMENT_IMAGES = [
   fahadAsset.url,
   naroAsset.url,
 ] as const;
+
+export const MANAGEMENT_MEMBERS = [
+  { name: "2A", role: "OWNER" },
+  { name: "FAD", role: "OWNER" },
+  { name: "SOVE", role: "FOUNDER" },
+  { name: "DAPPI", role: "FOUNDER" },
+  { name: "FWAZ", role: "FOUNDER" },
+  { name: "FAHAD", role: "DEV DIRECTOR" },
+  { name: "NARO", role: "DEV DIRECTOR" },
+] as const;

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, ImagePlus, Images, Loader2, Save, Trash2 } from "lucide-react";
+import { ArrowRight, ImagePlus, Images, Loader2, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,7 @@ import { ensureBrowserSupabaseConfig } from "@/integrations/supabase/runtime-con
 import { loadSection, publishSection } from "@/lib/edits.functions";
 import { EDIT_BUCKET } from "@/lib/edits-shared";
 import { readAccessToken, readVisitorToken } from "@/lib/gate-identity";
-import { DEFAULT_MANAGEMENT_IMAGES } from "@/lib/management-images";
+import { DEFAULT_MANAGEMENT_IMAGES, MANAGEMENT_MEMBERS } from "@/lib/management-images";
 
 type ManagedImage = { path: string; url: string };
 
@@ -19,6 +19,7 @@ export function ManagementImagesBoard() {
   const load = useServerFn(loadSection);
   const publish = useServerFn(publishSection);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [images, setImages] = useState<ManagedImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -31,11 +32,13 @@ export function ManagementImagesBoard() {
       .then((result) => {
         if (cancelled) return;
         const paths = result.entries.flatMap((entry) => entry.images);
-        setImages(
-          result.entries.length
-            ? paths.map((path) => ({ path, url: result.imageUrls[path] ?? "" })).filter((item) => item.url)
-            : DEFAULT_MANAGEMENT_IMAGES.map((url) => ({ path: url, url })),
-        );
+        setImages(MANAGEMENT_MEMBERS.map((_, index) => {
+          const path = paths[index];
+          const fallback = DEFAULT_MANAGEMENT_IMAGES[index];
+          return path && result.imageUrls[path]
+            ? { path, url: result.imageUrls[path] }
+            : { path: fallback, url: fallback };
+        }));
       })
       .catch(() => setMessage("تعذّر تحميل الصور"))
       .finally(() => {
@@ -46,26 +49,22 @@ export function ManagementImagesBoard() {
     };
   }, [load]);
 
-  const uploadFiles = async (files: File[]) => {
+  const replaceImage = async (file: File, index: number) => {
     setUploading(true);
     setMessage("");
     try {
       await ensureBrowserSupabaseConfig();
-      const uploaded: ManagedImage[] = [];
-      for (const file of files) {
-        const ext = (file.name.split(".").pop() || "img").toLowerCase();
-        const path = `live/management/${uid()}.${ext}`;
-        const { error } = await supabase.storage.from(EDIT_BUCKET).upload(path, file, {
-          contentType: file.type || "application/octet-stream",
-          upsert: false,
-        });
-        if (error) throw error;
-        const { data } = await supabase.storage.from(EDIT_BUCKET).createSignedUrl(path, 60 * 60 * 6);
-        if (!data?.signedUrl) throw new Error("signed_url_failed");
-        uploaded.push({ path, url: data.signedUrl });
-      }
-      setImages((current) => [...current, ...uploaded]);
-      setMessage("تمت إضافة الصور، اضغط حفظ لنشرها");
+      const ext = (file.name.split(".").pop() || "img").toLowerCase();
+      const path = `live/management/${uid()}.${ext}`;
+      const { error } = await supabase.storage.from(EDIT_BUCKET).upload(path, file, {
+        contentType: file.type || "application/octet-stream",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data } = await supabase.storage.from(EDIT_BUCKET).createSignedUrl(path, 60 * 60 * 6);
+      if (!data?.signedUrl) throw new Error("signed_url_failed");
+      setImages((current) => current.map((image, itemIndex) => itemIndex === index ? { path, url: data.signedUrl } : image));
+      setMessage(`تم استبدال صورة ${MANAGEMENT_MEMBERS[index].name}، اضغط حفظ لنشرها`);
     } catch (error) {
       console.error(error);
       setMessage("تعذّر رفع الصورة");
@@ -81,9 +80,7 @@ export function ManagementImagesBoard() {
       await publish({
         data: {
           section: "management",
-          entries: images.length
-            ? images.map((image) => ({ text: "", images: [image.path] }))
-            : [{ text: "__management_empty__", images: [] }],
+          entries: images.map((image) => ({ text: "", images: [image.path] })),
           accessToken: readAccessToken(),
           visitorToken: readVisitorToken(),
         },
@@ -114,39 +111,38 @@ export function ManagementImagesBoard() {
           ref={fileRef}
           type="file"
           accept="image/*"
-          multiple
           hidden
           onChange={(event) => {
-            const files = Array.from(event.target.files ?? []);
+            const file = event.target.files?.[0];
             event.target.value = "";
-            if (files.length) void uploadFiles(files);
+            if (file && selectedIndex !== null) void replaceImage(file, selectedIndex);
           }}
         />
 
-        <Button className="mb-8 w-full" disabled={uploading || loading} onClick={() => fileRef.current?.click()}>
-          {uploading ? <Loader2 className="animate-spin" /> : <ImagePlus />}
-          إضافة صور
-        </Button>
-
         {loading ? (
           <div className="flex justify-center py-12 text-muted-foreground"><Loader2 className="animate-spin" /></div>
-        ) : images.length === 0 ? (
-          <p className="surface-card rounded-2xl border border-dashed border-primary/40 px-4 py-12 text-center text-sm text-muted-foreground">لا توجد صور. أضف صورًا ثم اضغط حفظ.</p>
         ) : (
           <div className="space-y-5">
-            {images.map((image, index) => (
+            {MANAGEMENT_MEMBERS.map((member, index) => (
               <article key={`${image.path}-${index}`} className="surface-card relative overflow-hidden rounded-2xl border border-primary/30 p-2">
-                <img src={image.url} alt={`صورة الإدارة ${index + 1}`} className="max-h-[70vh] w-full rounded-xl object-contain" />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  aria-label={`حذف الصورة ${index + 1}`}
-                  className="absolute left-4 top-4"
-                  onClick={() => setImages((current) => current.filter((_, itemIndex) => itemIndex !== index))}
-                >
-                  <Trash2 />
-                </Button>
+                <img src={images[index]?.url} alt={`صورة ${member.name}`} className="max-h-[70vh] w-full rounded-xl object-contain" />
+                <div className="flex items-center justify-between gap-4 px-3 py-4">
+                  <div dir="ltr" className="text-left">
+                    <p className="text-lg font-extrabold text-foreground">{member.name}</p>
+                    <p className="text-xs font-bold text-primary">{member.role}</p>
+                  </div>
+                  <Button
+                    type="button"
+                    disabled={uploading}
+                    onClick={() => {
+                      setSelectedIndex(index);
+                      fileRef.current?.click();
+                    }}
+                  >
+                    {uploading && selectedIndex === index ? <Loader2 className="animate-spin" /> : <ImagePlus />}
+                    استبدال الصورة
+                  </Button>
+                </div>
               </article>
             ))}
           </div>
@@ -156,7 +152,7 @@ export function ManagementImagesBoard() {
       {!loading && (
         <div className="fixed inset-x-0 bottom-6 z-50 px-4">
           <div className="surface-card mx-auto flex max-w-2xl items-center justify-between gap-3 rounded-2xl border border-primary/50 bg-background/95 p-3 backdrop-blur">
-            <span className="text-xs text-muted-foreground">{message || `${images.length} صورة`}</span>
+            <span className="text-xs text-muted-foreground">{message || "7 خانات ثابتة"}</span>
             <Button disabled={saving || uploading} onClick={() => void save()}>
               {saving ? <Loader2 className="animate-spin" /> : <Save />}
               حفظ
