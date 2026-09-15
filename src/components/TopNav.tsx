@@ -15,6 +15,7 @@ const ITEMS: Item[] = [
   { key: "streamers", label: "الستريمرز", to: "/streamers" },
   { key: "revisions", label: "التعديلات", to: "/revisions" },
   { key: "threads", label: "الثريدات", to: "/threads" },
+  { key: "album", label: "الألبوم", to: "/album" },
 ];
 
 /** Simple horizontal, scrollable text nav used on the home page only. */
