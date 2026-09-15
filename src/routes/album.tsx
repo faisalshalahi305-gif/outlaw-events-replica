@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, ImagePlus, Images, Loader2, X } from "lucide-react";
+import { ArrowRight, ImagePlus, Images, Loader2, Trash2, X } from "lucide-react";
 
 import { VisitorMenu } from "@/components/VisitorMenu";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { EDIT_BUCKET } from "@/lib/edits-shared";
 import { useVisitorNumber } from "@/lib/use-visitor";
 import {
   ALBUM_PREFIX,
+  deleteAlbumPhoto,
   listAlbumPhotos,
   signAlbumPhotos,
   type AlbumPhoto,
@@ -43,6 +44,7 @@ function AlbumPage() {
   const visitorNumber = useVisitorNumber();
   const fetchPhotos = useServerFn(listAlbumPhotos);
   const signPhotos = useServerFn(signAlbumPhotos);
+  const removeServerPhoto = useServerFn(deleteAlbumPhoto);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [photos, setPhotos] = useState<AlbumPhoto[]>([]);
@@ -54,6 +56,7 @@ function AlbumPage() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -87,6 +90,22 @@ function AlbumPage() {
       setMessage("تعذّر تحميل المزيد");
     } finally {
       setLoadingMore(false);
+    }
+  };
+
+  const removePhoto = async (path: string) => {
+    if (!window.confirm("هل تريد حذف هذه الصورة من الألبوم؟")) return;
+    setDeleting(path);
+    setMessage("");
+    try {
+      await removeServerPhoto({ data: { path } });
+      setPhotos((current) => current.filter((photo) => photo.path !== path));
+      setTotal((current) => (current === null ? current : Math.max(0, current - 1)));
+      setMessage("تم حذف الصورة ✓");
+    } catch {
+      setMessage("تعذّر حذف الصورة");
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -185,19 +204,36 @@ function AlbumPage() {
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {photos.map((photo) => (
-              <button
+              <div
                 key={photo.path}
-                type="button"
-                onClick={() => setPreview(photo.url)}
-                className="surface-card group overflow-hidden rounded-2xl border border-primary/25 transition-all hover:border-primary hover:shadow-[var(--shadow-elegant)]"
+                className="surface-card group relative overflow-hidden rounded-2xl border border-primary/25 transition-all hover:border-primary hover:shadow-[var(--shadow-elegant)]"
               >
-                <img
-                  src={photo.url}
-                  alt="صورة من ألبوم أوت لاو"
-                  loading="lazy"
-                  className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
-                />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setPreview(photo.url)}
+                  className="block w-full"
+                >
+                  <img
+                    src={photo.url}
+                    alt="صورة من ألبوم أوت لاو"
+                    loading="lazy"
+                    className="aspect-square w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                </button>
+                <button
+                  type="button"
+                  aria-label="حذف الصورة"
+                  disabled={deleting === photo.path}
+                  onClick={() => void removePhoto(photo.path)}
+                  className="absolute left-2 top-2 rounded-full border border-destructive/60 bg-background/85 p-2 text-destructive backdrop-blur transition-colors hover:bg-destructive hover:text-destructive-foreground disabled:opacity-60"
+                >
+                  {deleting === photo.path ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             ))}
           </div>
         )}
