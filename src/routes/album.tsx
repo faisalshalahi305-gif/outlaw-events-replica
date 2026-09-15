@@ -93,6 +93,22 @@ function AlbumPage() {
     }
   };
 
+  const removePhoto = async (path: string) => {
+    if (!window.confirm("هل تريد حذف هذه الصورة من الألبوم؟")) return;
+    setDeleting(path);
+    setMessage("");
+    try {
+      await removeServerPhoto({ data: { path } });
+      setPhotos((current) => current.filter((photo) => photo.path !== path));
+      setTotal((current) => (current === null ? current : Math.max(0, current - 1)));
+      setMessage("تم حذف الصورة ✓");
+    } catch {
+      setMessage("تعذّر حذف الصورة");
+    } finally {
+      setDeleting(null);
+    }
+  };
+
   const upload = async (files: File[]) => {
     setUploading(true);
     setMessage("جاري رفع الصور…");
