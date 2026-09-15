@@ -84,3 +84,17 @@ export const signAlbumPhotos = createServerFn({ method: "POST" })
     );
     return { photos: photos.filter(Boolean) };
   });
+
+/** Public: remove one photo from the album. */
+export const deleteAlbumPhoto = createServerFn({ method: "POST" })
+  .inputValidator((data: { path: string }) => {
+    const path = String(data?.path ?? "").trim();
+    if (!path.startsWith(`${ALBUM_PREFIX}/`) || path.length > 300) throw new Error("invalid_path");
+    return { path };
+  })
+  .handler(async ({ data }) => {
+    const db = await admin();
+    const { error } = await db.storage.from(EDIT_BUCKET).remove([data.path]);
+    if (error) throw new Error("delete_failed");
+    return { ok: true as const };
+  });
