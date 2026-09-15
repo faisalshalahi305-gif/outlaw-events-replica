@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, ImagePlus, Images, Loader2, X } from "lucide-react";
+import { ArrowRight, ImagePlus, Images, Loader2, Trash2, X } from "lucide-react";
 
 import { VisitorMenu } from "@/components/VisitorMenu";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { EDIT_BUCKET } from "@/lib/edits-shared";
 import { useVisitorNumber } from "@/lib/use-visitor";
 import {
   ALBUM_PREFIX,
+  deleteAlbumPhoto,
   listAlbumPhotos,
   signAlbumPhotos,
   type AlbumPhoto,
