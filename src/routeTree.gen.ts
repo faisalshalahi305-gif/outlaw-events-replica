@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlbumRouteImport } from './routes/album'
 import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as ControlRouteImport } from './routes/control'
 import { Route as EventsRouteImport } from './routes/events'
@@ -37,6 +38,11 @@ import { Route as ControlThreadsIdRouteImport } from './routes/control.threads.$
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlbumRoute = AlbumRouteImport.update({
+  id: '/album',
+  path: '/album',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CharactersRoute = CharactersRouteImport.update({
@@ -157,6 +163,7 @@ const ControlThreadsIdRoute = ControlThreadsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/album': typeof AlbumRoute
   '/characters': typeof CharactersRoute
   '/control': typeof ControlRouteWithChildren
   '/events': typeof EventsRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/album': typeof AlbumRoute
   '/characters': typeof CharactersRoute
   '/events': typeof EventsRoute
   '/gate': typeof GateRoute
@@ -207,6 +215,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/album': typeof AlbumRoute
   '/characters': typeof CharactersRoute
   '/control': typeof ControlRouteWithChildren
   '/events': typeof EventsRoute
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/album'
     | '/characters'
     | '/control'
     | '/events'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/album'
     | '/characters'
     | '/events'
     | '/gate'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/album'
     | '/characters'
     | '/control'
     | '/events'
@@ -311,6 +323,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlbumRoute: typeof AlbumRoute
   CharactersRoute: typeof CharactersRoute
   ControlRoute: typeof ControlRouteWithChildren
   EventsRoute: typeof EventsRoute
@@ -330,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/album': {
+      id: '/album'
+      path: '/album'
+      fullPath: '/album'
+      preLoaderRoute: typeof AlbumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/characters': {
@@ -552,6 +572,7 @@ const ThreadsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlbumRoute: AlbumRoute,
   CharactersRoute: CharactersRoute,
   ControlRoute: ControlRouteWithChildren,
   EventsRoute: EventsRoute,
