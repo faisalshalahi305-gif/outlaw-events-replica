@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Home, MoreVertical, User, UsersRound } from "lucide-react";
+import { Home, Lightbulb, MoreVertical, User, UsersRound } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -9,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SuggestionsDialog } from "@/components/SuggestionsDialog";
 
 type VisitorMenuProps = {
   visitorNumber: number | null;
@@ -23,10 +21,8 @@ type VisitorMenuProps = {
  */
 export function VisitorMenu({ visitorNumber, onTriggerPress }: VisitorMenuProps) {
   const label = visitorNumber ? `الزائر-${visitorNumber}` : "الزائر-...";
-  const [suggestOpen, setSuggestOpen] = useState(false);
 
   return (
-    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
@@ -75,15 +71,17 @@ export function VisitorMenu({ visitorNumber, onTriggerPress }: VisitorMenuProps)
             إدارة سيرفر أوت لاو
           </Link>
         </DropdownMenuItem>
+
+        <DropdownMenuItem asChild className="cursor-pointer rounded-xl px-3 py-2.5">
+          <Link
+            to="/suggestions"
+            className="flex w-full items-center gap-3 text-right font-bold"
+          >
+            <Lightbulb className="h-4 w-4 text-primary" />
+            الاقتراحات
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-
-    <SuggestionsDialog
-      open={suggestOpen}
-      onOpenChange={setSuggestOpen}
-      visitorNumber={visitorNumber}
-    />
-    </>
   );
-
 }

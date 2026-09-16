@@ -1,17 +1,14 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 
-import { SuggestionsDialog } from "@/components/SuggestionsDialog";
-import { useVisitorNumber } from "@/lib/use-visitor";
 import { cn } from "@/lib/utils";
 
-type Item = { key: string; label: string; to?: string };
+type Item = { key: string; label: string; to: string };
 
 /** Visual order: left -> right. */
 const ITEMS: Item[] = [
   { key: "events", label: "الأحداث", to: "/events" },
   { key: "characters", label: "الشخصيات", to: "/characters" },
-  { key: "suggestions", label: "الاقتراحات" },
   { key: "streamers", label: "الستريمرز", to: "/streamers" },
   { key: "revisions", label: "التعديلات", to: "/revisions" },
   { key: "threads", label: "الثريدات", to: "/threads" },
@@ -20,8 +17,6 @@ const ITEMS: Item[] = [
 
 /** Simple horizontal, scrollable text nav used on the home page only. */
 export function TopNav() {
-  const [suggestOpen, setSuggestOpen] = useState(false);
-  const visitorNumber = useVisitorNumber();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const scroller = useRef<HTMLDivElement | null>(null);
@@ -74,59 +69,38 @@ export function TopNav() {
     );
 
   return (
-    <>
-      <nav dir="ltr" aria-label="التنقل الرئيسي" className="min-w-0">
-        <div
-          ref={scroller}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerLeave={endDrag}
-          onPointerCancel={endDrag}
-          onWheel={onWheel}
-          className="w-full cursor-grab overflow-x-auto overscroll-x-contain active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-x" }}
-        >
-          <div className="flex w-max items-center gap-3 px-1">
-            {ITEMS.map((item, i) => (
-              <Fragment key={item.key}>
-                {i > 0 && (
-                  <span aria-hidden className="shrink-0 select-none text-primary/40">
-                    |
-                  </span>
-                )}
-                {item.to ? (
-                  <Link
-                    to={item.to}
-                    onClick={guardClick}
-                    draggable={false}
-                    className={linkClass(pathname.startsWith(item.to))}
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      if (drag.current.moved) return guardClick(e);
-                      setSuggestOpen(true);
-                    }}
-                    className={linkClass(false)}
-                  >
-                    {item.label}
-                  </button>
-                )}
-              </Fragment>
-            ))}
-          </div>
+    <nav dir="ltr" aria-label="التنقل الرئيسي" className="min-w-0">
+      <div
+        ref={scroller}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+        onWheel={onWheel}
+        className="w-full cursor-grab overflow-x-auto overscroll-x-contain active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-x" }}
+      >
+        <div className="flex w-max items-center gap-3 px-1">
+          {ITEMS.map((item, i) => (
+            <Fragment key={item.key}>
+              {i > 0 && (
+                <span aria-hidden className="shrink-0 select-none text-primary/40">
+                  |
+                </span>
+              )}
+              <Link
+                to={item.to}
+                onClick={guardClick}
+                draggable={false}
+                className={linkClass(pathname.startsWith(item.to))}
+              >
+                {item.label}
+              </Link>
+            </Fragment>
+          ))}
         </div>
-      </nav>
-
-      <SuggestionsDialog
-        open={suggestOpen}
-        onOpenChange={setSuggestOpen}
-        visitorNumber={visitorNumber}
-      />
-    </>
+      </div>
+    </nav>
   );
 }

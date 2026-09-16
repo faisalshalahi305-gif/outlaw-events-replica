@@ -1,15 +1,30 @@
-import { useRef, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ImagePlus, Loader2, Send, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowRight, ImagePlus, Lightbulb, Loader2, Send, X } from "lucide-react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { submitSuggestion } from "@/lib/suggestions.functions";
+import { useVisitorNumber } from "@/lib/use-visitor";
+
+export const Route = createFileRoute("/suggestions")({
+  head: () => ({
+    meta: [
+      { title: "الاقتراحات | أحداث أوت لاو" },
+      {
+        name: "description",
+        content: "شاركنا اقتراحك لتطوير سيرفر أوت لاو مع إمكانية إرفاق الصور.",
+      },
+      { property: "og:title", content: "الاقتراحات | أحداث أوت لاو" },
+      {
+        property: "og:description",
+        content: "شاركنا اقتراحك لتطوير سيرفر أوت لاو مع إمكانية إرفاق الصور.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: SuggestionsPage,
+});
 
 const MAX_IMAGES = 4;
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -23,14 +38,9 @@ function readAsDataUrl(file: File) {
   });
 }
 
-type Props = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  visitorNumber?: number | null;
-};
-
-export function SuggestionsDialog({ open, onOpenChange, visitorNumber }: Props) {
+function SuggestionsPage() {
   const send = useServerFn(submitSuggestion);
+  const visitorNumber = useVisitorNumber();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
@@ -89,21 +99,30 @@ export function SuggestionsDialog({ open, onOpenChange, visitorNumber }: Props) 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        dir="rtl"
-        className="surface-card max-h-[88vh] overflow-y-auto rounded-2xl border-primary/40 sm:max-w-md"
-      >
-        <DialogHeader className="text-right">
-          <DialogTitle className="text-xl font-extrabold text-primary">
-            الاقتراحات
-          </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
-            شاركنا اقتراحك مع إمكانية إرفاق حتى {MAX_IMAGES} صور
-          </DialogDescription>
-        </DialogHeader>
+    <main dir="rtl" className="relative min-h-screen overflow-hidden px-5 py-12">
+      <span className="pointer-events-none absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
 
-        <div className="space-y-4 text-right">
+      <div className="relative z-10 mx-auto w-full max-w-md pb-28">
+        <Link
+          to="/"
+          className="surface-card mb-8 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary"
+        >
+          <ArrowRight className="h-3.5 w-3.5" />
+          الرجوع للرئيسية
+        </Link>
+
+        <header className="text-center">
+          <div className="glow-ring mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-primary/60">
+            <Lightbulb className="h-7 w-7 text-primary" />
+          </div>
+          <h1 className="mt-6 text-2xl font-extrabold text-primary">الاقتراحات</h1>
+          <div className="ornament-line mx-auto mt-4 w-48" />
+          <p className="mt-3 text-xs font-bold text-muted-foreground">
+            شاركنا اقتراحك مع إمكانية إرفاق حتى {MAX_IMAGES} صور
+          </p>
+        </header>
+
+        <div className="surface-card mt-8 space-y-4 rounded-2xl border border-primary/40 p-5 text-right">
           <label className="block space-y-1.5">
             <span className="text-xs font-bold text-foreground">الاسم</span>
             <input
@@ -198,7 +217,7 @@ export function SuggestionsDialog({ open, onOpenChange, visitorNumber }: Props) 
             إرسال
           </button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </main>
   );
 }

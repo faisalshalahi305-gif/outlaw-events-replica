@@ -20,6 +20,7 @@ import { Route as RevisionsRouteImport } from './routes/revisions'
 import { Route as SetupRouteImport } from './routes/setup'
 import { Route as StreamersRouteImport } from './routes/streamers'
 import { Route as StreamersNewRouteImport } from './routes/streamers-new'
+import { Route as SuggestionsRouteImport } from './routes/suggestions'
 import { Route as ThreadsRouteImport } from './routes/threads'
 import { Route as ControlIndexRouteImport } from './routes/control.index'
 import { Route as ControlCharactersRouteImport } from './routes/control.characters'
@@ -88,6 +89,11 @@ const StreamersRoute = StreamersRouteImport.update({
 const StreamersNewRoute = StreamersNewRouteImport.update({
   id: '/streamers-new',
   path: '/streamers-new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuggestionsRoute = SuggestionsRouteImport.update({
+  id: '/suggestions',
+  path: '/suggestions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ThreadsRoute = ThreadsRouteImport.update({
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/setup': typeof SetupRoute
   '/streamers': typeof StreamersRoute
   '/streamers-new': typeof StreamersNewRoute
+  '/suggestions': typeof SuggestionsRoute
   '/threads': typeof ThreadsRouteWithChildren
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/setup': typeof SetupRoute
   '/streamers': typeof StreamersRoute
   '/streamers-new': typeof StreamersNewRoute
+  '/suggestions': typeof SuggestionsRoute
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
   '/control/management': typeof ControlManagementRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/setup': typeof SetupRoute
   '/streamers': typeof StreamersRoute
   '/streamers-new': typeof StreamersNewRoute
+  '/suggestions': typeof SuggestionsRoute
   '/threads': typeof ThreadsRouteWithChildren
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/streamers'
     | '/streamers-new'
+    | '/suggestions'
     | '/threads'
     | '/control/characters'
     | '/control/events'
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/streamers'
     | '/streamers-new'
+    | '/suggestions'
     | '/control/characters'
     | '/control/events'
     | '/control/management'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/setup'
     | '/streamers'
     | '/streamers-new'
+    | '/suggestions'
     | '/threads'
     | '/control/characters'
     | '/control/events'
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   SetupRoute: typeof SetupRoute
   StreamersRoute: typeof StreamersRoute
   StreamersNewRoute: typeof StreamersNewRoute
+  SuggestionsRoute: typeof SuggestionsRoute
   ThreadsRoute: typeof ThreadsRouteWithChildren
 }
 
@@ -413,6 +426,13 @@ declare module '@tanstack/react-router' {
       path: '/streamers-new'
       fullPath: '/streamers-new'
       preLoaderRoute: typeof StreamersNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suggestions': {
+      id: '/suggestions'
+      path: '/suggestions'
+      fullPath: '/suggestions'
+      preLoaderRoute: typeof SuggestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/threads': {
@@ -582,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   SetupRoute: SetupRoute,
   StreamersRoute: StreamersRoute,
   StreamersNewRoute: StreamersNewRoute,
+  SuggestionsRoute: SuggestionsRoute,
   ThreadsRoute: ThreadsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
