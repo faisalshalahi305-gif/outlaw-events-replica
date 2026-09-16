@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Home, MoreVertical, User, UsersRound } from "lucide-react";
+import { Home, Lightbulb, MoreVertical, User, UsersRound } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -9,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SuggestionsDialog } from "@/components/SuggestionsDialog";
 
 type VisitorMenuProps = {
   visitorNumber: number | null;
@@ -23,10 +21,8 @@ type VisitorMenuProps = {
  */
 export function VisitorMenu({ visitorNumber, onTriggerPress }: VisitorMenuProps) {
   const label = visitorNumber ? `الزائر-${visitorNumber}` : "الزائر-...";
-  const [suggestOpen, setSuggestOpen] = useState(false);
 
   return (
-    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
