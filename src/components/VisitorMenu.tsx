@@ -71,15 +71,17 @@ export function VisitorMenu({ visitorNumber, onTriggerPress }: VisitorMenuProps)
             إدارة سيرفر أوت لاو
           </Link>
         </DropdownMenuItem>
+
+        <DropdownMenuItem asChild className="cursor-pointer rounded-xl px-3 py-2.5">
+          <Link
+            to="/suggestions"
+            className="flex w-full items-center gap-3 text-right font-bold"
+          >
+            <Lightbulb className="h-4 w-4 text-primary" />
+            الاقتراحات
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-
-    <SuggestionsDialog
-      open={suggestOpen}
-      onOpenChange={setSuggestOpen}
-      visitorNumber={visitorNumber}
-    />
-    </>
   );
-
 }
