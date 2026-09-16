@@ -1,17 +1,14 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 
-import { SuggestionsDialog } from "@/components/SuggestionsDialog";
-import { useVisitorNumber } from "@/lib/use-visitor";
 import { cn } from "@/lib/utils";
 
-type Item = { key: string; label: string; to?: string };
+type Item = { key: string; label: string; to: string };
 
 /** Visual order: left -> right. */
 const ITEMS: Item[] = [
   { key: "events", label: "الأحداث", to: "/events" },
   { key: "characters", label: "الشخصيات", to: "/characters" },
-  { key: "suggestions", label: "الاقتراحات" },
   { key: "streamers", label: "الستريمرز", to: "/streamers" },
   { key: "revisions", label: "التعديلات", to: "/revisions" },
   { key: "threads", label: "الثريدات", to: "/threads" },
@@ -20,8 +17,6 @@ const ITEMS: Item[] = [
 
 /** Simple horizontal, scrollable text nav used on the home page only. */
 export function TopNav() {
-  const [suggestOpen, setSuggestOpen] = useState(false);
-  const visitorNumber = useVisitorNumber();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const scroller = useRef<HTMLDivElement | null>(null);
