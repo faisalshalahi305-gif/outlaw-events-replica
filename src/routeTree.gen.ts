@@ -25,7 +25,6 @@ import { Route as ThreadsRouteImport } from './routes/threads'
 import { Route as ControlIndexRouteImport } from './routes/control.index'
 import { Route as ControlCharactersRouteImport } from './routes/control.characters'
 import { Route as ControlEventsRouteImport } from './routes/control.events'
-import { Route as ControlManagementRouteImport } from './routes/control.management'
 import { Route as ControlRevisionsRouteImport } from './routes/control.revisions'
 import { Route as ControlStreamersRouteImport } from './routes/control.streamers'
 import { Route as ControlSuggestionsRouteImport } from './routes/control.suggestions'
@@ -34,6 +33,7 @@ import { Route as RevisionsSectionRouteImport } from './routes/revisions.$sectio
 import { Route as ThreadsIndexRouteImport } from './routes/threads.index'
 import { Route as ThreadsIdRouteImport } from './routes/threads.$id'
 import { Route as ThreadsNewRouteImport } from './routes/threads.new'
+import { Route as ControlThreadsIndexRouteImport } from './routes/control.threads.index'
 import { Route as ControlThreadsIdRouteImport } from './routes/control.threads.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -116,11 +116,6 @@ const ControlEventsRoute = ControlEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => ControlRoute,
 } as any)
-const ControlManagementRoute = ControlManagementRouteImport.update({
-  id: '/management',
-  path: '/management',
-  getParentRoute: () => ControlRoute,
-} as any)
 const ControlRevisionsRoute = ControlRevisionsRouteImport.update({
   id: '/revisions',
   path: '/revisions',
@@ -161,6 +156,11 @@ const ThreadsNewRoute = ThreadsNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ThreadsRoute,
 } as any)
+const ControlThreadsIndexRoute = ControlThreadsIndexRouteImport.update({
+  id: '/threads/',
+  path: '/threads/',
+  getParentRoute: () => ControlRoute,
+} as any)
 const ControlThreadsIdRoute = ControlThreadsIdRouteImport.update({
   id: '/threads/$id',
   path: '/threads/$id',
@@ -183,7 +183,6 @@ export interface FileRoutesByFullPath {
   '/threads': typeof ThreadsRouteWithChildren
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
-  '/control/management': typeof ControlManagementRoute
   '/control/revisions': typeof ControlRevisionsRoute
   '/control/streamers': typeof ControlStreamersRoute
   '/control/suggestions': typeof ControlSuggestionsRoute
@@ -194,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/revisions/': typeof RevisionsIndexRoute
   '/threads/': typeof ThreadsIndexRoute
   '/control/threads/$id': typeof ControlThreadsIdRoute
+  '/control/threads/': typeof ControlThreadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -208,7 +208,6 @@ export interface FileRoutesByTo {
   '/suggestions': typeof SuggestionsRoute
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
-  '/control/management': typeof ControlManagementRoute
   '/control/revisions': typeof ControlRevisionsRoute
   '/control/streamers': typeof ControlStreamersRoute
   '/control/suggestions': typeof ControlSuggestionsRoute
@@ -219,6 +218,7 @@ export interface FileRoutesByTo {
   '/revisions': typeof RevisionsIndexRoute
   '/threads': typeof ThreadsIndexRoute
   '/control/threads/$id': typeof ControlThreadsIdRoute
+  '/control/threads': typeof ControlThreadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -237,7 +237,6 @@ export interface FileRoutesById {
   '/threads': typeof ThreadsRouteWithChildren
   '/control/characters': typeof ControlCharactersRoute
   '/control/events': typeof ControlEventsRoute
-  '/control/management': typeof ControlManagementRoute
   '/control/revisions': typeof ControlRevisionsRoute
   '/control/streamers': typeof ControlStreamersRoute
   '/control/suggestions': typeof ControlSuggestionsRoute
@@ -248,6 +247,7 @@ export interface FileRoutesById {
   '/revisions/': typeof RevisionsIndexRoute
   '/threads/': typeof ThreadsIndexRoute
   '/control/threads/$id': typeof ControlThreadsIdRoute
+  '/control/threads/': typeof ControlThreadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,7 +267,6 @@ export interface FileRouteTypes {
     | '/threads'
     | '/control/characters'
     | '/control/events'
-    | '/control/management'
     | '/control/revisions'
     | '/control/streamers'
     | '/control/suggestions'
@@ -278,6 +277,7 @@ export interface FileRouteTypes {
     | '/revisions/'
     | '/threads/'
     | '/control/threads/$id'
+    | '/control/threads/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -292,7 +292,6 @@ export interface FileRouteTypes {
     | '/suggestions'
     | '/control/characters'
     | '/control/events'
-    | '/control/management'
     | '/control/revisions'
     | '/control/streamers'
     | '/control/suggestions'
@@ -303,6 +302,7 @@ export interface FileRouteTypes {
     | '/revisions'
     | '/threads'
     | '/control/threads/$id'
+    | '/control/threads'
   id:
     | '__root__'
     | '/'
@@ -320,7 +320,6 @@ export interface FileRouteTypes {
     | '/threads'
     | '/control/characters'
     | '/control/events'
-    | '/control/management'
     | '/control/revisions'
     | '/control/streamers'
     | '/control/suggestions'
@@ -331,6 +330,7 @@ export interface FileRouteTypes {
     | '/revisions/'
     | '/threads/'
     | '/control/threads/$id'
+    | '/control/threads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -463,13 +463,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ControlEventsRouteImport
       parentRoute: typeof ControlRoute
     }
-    '/control/management': {
-      id: '/control/management'
-      path: '/management'
-      fullPath: '/control/management'
-      preLoaderRoute: typeof ControlManagementRouteImport
-      parentRoute: typeof ControlRoute
-    }
     '/control/revisions': {
       id: '/control/revisions'
       path: '/revisions'
@@ -526,6 +519,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ThreadsNewRouteImport
       parentRoute: typeof ThreadsRoute
     }
+    '/control/threads/': {
+      id: '/control/threads/'
+      path: '/threads'
+      fullPath: '/control/threads/'
+      preLoaderRoute: typeof ControlThreadsIndexRouteImport
+      parentRoute: typeof ControlRoute
+    }
     '/control/threads/$id': {
       id: '/control/threads/$id'
       path: '/threads/$id'
@@ -539,23 +539,23 @@ declare module '@tanstack/react-router' {
 interface ControlRouteChildren {
   ControlCharactersRoute: typeof ControlCharactersRoute
   ControlEventsRoute: typeof ControlEventsRoute
-  ControlManagementRoute: typeof ControlManagementRoute
   ControlRevisionsRoute: typeof ControlRevisionsRoute
   ControlStreamersRoute: typeof ControlStreamersRoute
   ControlSuggestionsRoute: typeof ControlSuggestionsRoute
   ControlIndexRoute: typeof ControlIndexRoute
   ControlThreadsIdRoute: typeof ControlThreadsIdRoute
+  ControlThreadsIndexRoute: typeof ControlThreadsIndexRoute
 }
 
 const ControlRouteChildren: ControlRouteChildren = {
   ControlCharactersRoute: ControlCharactersRoute,
   ControlEventsRoute: ControlEventsRoute,
-  ControlManagementRoute: ControlManagementRoute,
   ControlRevisionsRoute: ControlRevisionsRoute,
   ControlStreamersRoute: ControlStreamersRoute,
   ControlSuggestionsRoute: ControlSuggestionsRoute,
   ControlIndexRoute: ControlIndexRoute,
   ControlThreadsIdRoute: ControlThreadsIdRoute,
+  ControlThreadsIndexRoute: ControlThreadsIndexRoute,
 }
 
 const ControlRouteWithChildren =

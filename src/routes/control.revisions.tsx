@@ -1,15 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, Loader2, PencilLine, Search, Trash2 } from "lucide-react";
+import { ArrowRight, Check, Loader2, Search, Trash2 } from "lucide-react";
 
 import { decideEdit, listEdits, type EditRequest } from "@/lib/edits.functions";
-import {
-  adminDeleteThread,
-  listThreads,
-  type ThreadCard,
-} from "@/lib/threads.functions";
 import { readAccessToken, readVisitorToken } from "@/lib/gate-identity";
+
 
 export const Route = createFileRoute("/control/revisions")({
   head: () => ({
@@ -32,9 +28,6 @@ export const Route = createFileRoute("/control/revisions")({
 const SECTION_LABEL: Record<string, string> = {
   characters: "الشخصيات الرئيسية",
   events: "أحداث أوت لاو الأخيرة",
-  thread_create: "ثريد جديد",
-  thread_update: "تعديل ثريد",
-  thread_delete: "حذف ثريد",
 };
 
 const TABS: { value: "pending" | "approved" | "rejected" | "all"; label: string }[] = [
@@ -58,8 +51,6 @@ function formatDate(iso: string) {
 function RevisionsPanel() {
   const load = useServerFn(listEdits);
   const decide = useServerFn(decideEdit);
-  const loadThreads = useServerFn(listThreads);
-  const dropThread = useServerFn(adminDeleteThread);
 
   const [requests, setRequests] = useState<EditRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +59,6 @@ function RevisionsPanel() {
   const [message, setMessage] = useState("");
   const [tab, setTab] = useState<(typeof TABS)[number]["value"]>("pending");
   const [query, setQuery] = useState("");
-  const [threads, setThreads] = useState<ThreadCard[]>([]);
 
   const refresh = async () => {
     try {
@@ -76,11 +66,10 @@ function RevisionsPanel() {
       const res = await load({
         data: { accessToken: readAccessToken(), visitorToken: readVisitorToken() },
       });
-      setRequests(res.requests);
-      const threadRes = await loadThreads({ data: {} });
-      setThreads(threadRes.threads);
+      setRequests(res.requests.filter((r) => !r.section.startsWith("thread_")));
     } catch {
       setError("تعذّر تحميل قائمة التعديلات");
+
     } finally {
       setLoading(false);
     }
@@ -129,26 +118,6 @@ function RevisionsPanel() {
 
   const pendingCount = requests.filter((r) => r.status === "pending").length;
 
-  const removeThread = async (id: string, title: string) => {
-    if (!window.confirm(`حذف الثريد «${title}» نهائيًا؟`)) return;
-    setBusy(id);
-    setMessage("");
-    try {
-      await dropThread({
-        data: {
-          id,
-          accessToken: readAccessToken(),
-          visitorToken: readVisitorToken(),
-        },
-      });
-      setMessage("تم حذف الثريد ✓");
-      await refresh();
-    } catch {
-      setMessage("تعذّر حذف الثريد");
-    }
-    setBusy("");
-    setTimeout(() => setMessage(""), 4000);
-  };
 
   return (
     <main dir="rtl" className="relative min-h-screen px-4 pb-24 pt-8">
@@ -313,57 +282,6 @@ function RevisionsPanel() {
           </div>
         )}
 
-        <section className="mt-14">
-          <h2 className="mb-2 text-center text-xl font-extrabold text-primary">
-            إدارة الثريدات المنشورة
-          </h2>
-          <p className="mb-6 text-center text-sm text-muted-foreground">
-            التعديل والحذف من هنا فقط، ويُطبّق فورًا على الموقع.
-          </p>
-
-          {threads.length === 0 ? (
-            <p className="text-center text-sm text-muted-foreground">لا توجد ثريدات منشورة.</p>
-          ) : (
-            <div className="space-y-4">
-              {threads.map((thread) => (
-                <article
-                  key={thread.id}
-                  className="surface-card rounded-3xl border border-border p-4 text-right"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-sm font-extrabold text-foreground">{thread.title}</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {formatDate(thread.createdAt)}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{thread.excerpt}</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Link
-                      to="/control/threads/$id"
-                      params={{ id: thread.id }}
-                      className="inline-flex items-center gap-2 rounded-xl border border-primary/50 px-5 py-2 text-xs font-bold text-primary transition-colors hover:bg-accent"
-                    >
-                      <PencilLine className="h-3.5 w-3.5" />
-                      تعديل الثريد
-                    </Link>
-                    <button
-                      onClick={() => removeThread(thread.id, thread.title)}
-                      disabled={busy === thread.id}
-                      className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-destructive/60 hover:text-destructive disabled:opacity-60"
-                    >
-                      {busy === thread.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-3.5 w-3.5" />
-                      )}
-                      حذف الثريد
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
       </div>
     </main>
   );
