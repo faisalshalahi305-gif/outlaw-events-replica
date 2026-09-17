@@ -28,9 +28,6 @@ export const Route = createFileRoute("/control/revisions")({
 const SECTION_LABEL: Record<string, string> = {
   characters: "الشخصيات الرئيسية",
   events: "أحداث أوت لاو الأخيرة",
-  thread_create: "ثريد جديد",
-  thread_update: "تعديل ثريد",
-  thread_delete: "حذف ثريد",
 };
 
 const TABS: { value: "pending" | "approved" | "rejected" | "all"; label: string }[] = [
