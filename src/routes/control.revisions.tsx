@@ -125,26 +125,6 @@ function RevisionsPanel() {
 
   const pendingCount = requests.filter((r) => r.status === "pending").length;
 
-  const removeThread = async (id: string, title: string) => {
-    if (!window.confirm(`حذف الثريد «${title}» نهائيًا؟`)) return;
-    setBusy(id);
-    setMessage("");
-    try {
-      await dropThread({
-        data: {
-          id,
-          accessToken: readAccessToken(),
-          visitorToken: readVisitorToken(),
-        },
-      });
-      setMessage("تم حذف الثريد ✓");
-      await refresh();
-    } catch {
-      setMessage("تعذّر حذف الثريد");
-    }
-    setBusy("");
-    setTimeout(() => setMessage(""), 4000);
-  };
 
   return (
     <main dir="rtl" className="relative min-h-screen px-4 pb-24 pt-8">
