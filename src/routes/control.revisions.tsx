@@ -1,15 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, Loader2, PencilLine, Search, Trash2 } from "lucide-react";
+import { ArrowRight, Check, Loader2, Search, Trash2 } from "lucide-react";
 
 import { decideEdit, listEdits, type EditRequest } from "@/lib/edits.functions";
-import {
-  adminDeleteThread,
-  listThreads,
-  type ThreadCard,
-} from "@/lib/threads.functions";
 import { readAccessToken, readVisitorToken } from "@/lib/gate-identity";
+
 
 export const Route = createFileRoute("/control/revisions")({
   head: () => ({
